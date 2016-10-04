@@ -1,6 +1,7 @@
 # Social feeds
 
 Feed aggregator from various social sources.
+
 ---
 
 ## Install
@@ -11,10 +12,11 @@ npm install --save ...
 
 ## Library usage
 
-**Note:** This library uses es6-promises with a polyfill.
+**Note:** This library uses [es6-promises](https://github.com/stefanpenner/es6-promise#readme) polyfill.
 
 ```js
 var config = {
+    // TODO: Set configs
     facebook: {},
     twitter: {},
     instagram: {}  
