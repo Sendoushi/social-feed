@@ -1,0 +1,8 @@
+# Logs
+*.log
+
+# Vendors...
+/node_modules
+
+# OS related
+.DS_Store

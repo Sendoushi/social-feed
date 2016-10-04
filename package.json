@@ -1,0 +1,28 @@
+{
+  "name": "social_feeds",
+  "main": "src/socialFeeds.js",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "test": "npm run eslint-test",
+    "eslint": "./node_modules/eslint/bin/eslint.js",
+    "eslint-test": "npm run eslint -- ./src/*",
+    "build": "node node_modules/gulp/bin/gulp.js dist:build",
+    "build-prod": "node node_modules/gulp/bin/gulp.js dist:build --prod; npm run test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-eslint": "^6.1.2",
+    "es6-promise": "^4.0.5",
+    "eslint": "^2.0.0",
+    "eslint-config-defaults": "^9.0.0",
+    "eslint-plugin-react": "^6.2.0",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-util": "^3.0.7",
+    "gulp-webpack": "^1.5.0",
+    "webpack": "^1.13.2"
+  },
+  "dependencies": {}
+}
