@@ -4,7 +4,7 @@ Feed aggregator from various social sources.
 
 #### Available feeds
 - [ ] Facebook
-- [x] Twitter (helper for the access)[https://www.slickremix.com/docs/how-to-get-api-keys-and-tokens-for-twitter/]
+- [x] Twitter: [helper for the access](https://www.slickremix.com/docs/how-to-get-api-keys-and-tokens-for-twitter/)
 - [x] Instagram
 - [ ] Google+
 
