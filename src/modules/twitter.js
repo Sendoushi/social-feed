@@ -14,51 +14,14 @@ require('es6-promise').polyfill();
 // Functions
 
 /**
- * Makes a request
- * @param  {string} url
- * @param  {string} method
- * @return {promise}
- */
-// function makeReq(url, method) {
-//     var xhr = new XMLHttpRequest();
-//     var promise = new Promise(function (resolve, reject) {
-//         xhr.onreadystatechange = function () {
-//             if (xhr.readyState === 4 && xhr.status === 200) {
-//                 resolve(xhr.responseText);
-//             } else {
-//                 reject(xhr.status);
-//             }
-//         };
-//     });
-
-//     // Finally the request
-//     xhr.open(method, url, true);
-//     xhr.send(null);
-
-//     return promise;
-// }
-
-/**
  * Gets twitter timeline
  * @param  {object} query
  * @return {promise}
  */
 function getTimeline(cb, query) {
-    // var url = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
-    // var params = [];
-
-    // // Params
-    // params.push('screen_name=sendoushi');
-    // params.push('count=2');
-
-    // // Lets build the url
-    // url += '?' + params.join('&');
-
-    // return makeReq(url, 'GET');
-
     var params = {
         screen_name: query.screenName,
-        count: query.count
+        count: query.limit
     };
     var promise = new Promise(function (resolve, reject) {
         // Make the request
@@ -80,6 +43,7 @@ function getTimeline(cb, query) {
  * @return {promise}
  */
 function get(config) {
+    var access = config && config.access;
     var cb;
 
     if (!config || typeof config !== 'object') {
@@ -88,15 +52,21 @@ function get(config) {
         });
     }
 
-    if (!config.access || !config.access.token || !config.access.tokenSecret) {
+    if (!access || !access.consumerKey || !access.consumerSecret || !access.token || !access.tokenSecret) {
         return new Promise(function (resolve, reject) {
-            reject('Twitter needs a token and a token secret!');
+            reject('Twitter needs a consumer key, consumer secret, token and a token secret!');
+        });
+    }
+
+    if (!config.query || !config.query.screenName) {
+        return new Promise(function (resolve, reject) {
+            reject('Twitter needs a screen name!');
         });
     }
 
     cb = new Codebird;
-    cb.setConsumerKey(config.access.consumerKey, config.access.consumerSecret);
-    cb.setToken(config.access.token, config.access.tokenSecret);
+    cb.setConsumerKey(access.consumerKey, access.consumerSecret);
+    cb.setToken(access.token, access.tokenSecret);
 
     // Lets retrieve the data now
     return getTimeline(cb, config.query || {})

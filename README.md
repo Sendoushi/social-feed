@@ -4,8 +4,8 @@ Feed aggregator from various social sources.
 
 #### Available feeds
 - [ ] Facebook
-- [x] Twitter
-- [ ] Instagram
+- [x] Twitter (helper for the access)[https://www.slickremix.com/docs/how-to-get-api-keys-and-tokens-for-twitter/]
+- [x] Instagram
 - [ ] Google+
 
 ---
@@ -22,19 +22,26 @@ npm install --save ...
 
 ```js
 var config = {
-    facebook: {},
+    facebook: {
+    },
     twitter: {
         access: {
             consumerKey: '',
             consumerSecret: '',
             token: '',
             tokenSecret: ''
-        }, query: {
+        },
+        query: {
             screenName: '',
             count: 10
         }
     },
-    instagram: {}  
+    instagram: {
+        query: {
+            screenName: '',
+            limit: 10
+        }
+    }  
 };
 
 // To get social feeds based on the config object keys

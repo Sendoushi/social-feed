@@ -8,17 +8,24 @@
 
 var expect = require('expect.js');
 var socialFeeds = require('../src/socialFeeds.js');
+// Keys and tokens just for test purposes
 var basicConfig = {
-    // TODO: Just for debug purposes
     twitter: {
         access: {
             consumerKey: 'ulFwf8RaQs6S9ElUbZnFxV0u4',
             consumerSecret: 'y0H2FqCYuoTTYD36Nob1Avc0lmyWEjEs7XopuCNmThQF9Vzfwj',
             token: '783357826949324800-Df16ktCCvZq87XaNjpEStOzm9KgozzZ',
             tokenSecret: 'c5c2t04WcPufIfcHytf8dKLeAQLVAuSCn3yKQOzYsqWyN'
-        }, query: {
+        },
+        query: {
             screenName: 'google',
-            count: 2
+            limit: 2
+        }
+    },
+    instagram: {
+        query: {
+            screenName: 'google',
+            limit: 10
         }
     }
 };
@@ -76,7 +83,7 @@ function commonModule(module, config) {
         .then(function (data) {
             expect(data).to.have.property('data');
             expect(data.data).to.be.an('array');
-            config.query.count && expect(data.data.length).to.eql(config.query.count);
+            config.query.limit && expect(data.data.length).to.be.lessThan(config.query.limit + 1);
             done();
         })
         .catch(function (err) {
@@ -107,12 +114,12 @@ describe('get', function () {
     // TODO: Test modules results...
 });
 
-// describe('get.facebook', function () {
-//     var module = socialFeeds.facebook;
+describe.skip('get.facebook', function () {
+    var module = socialFeeds.facebook;
 
-//     commonBasic(module);
-//     commonModule(module);
-// });
+    commonBasic(module);
+    commonModule(module);
+});
 
 describe('get.twitter', function () {
     var module = socialFeeds.twitter;
@@ -121,7 +128,22 @@ describe('get.twitter', function () {
     commonBasic(module);
     commonModule(module, configTwitter);
 
-    it('should return data', function (done) {
+    it('should error without screen name', function (done) {
+        module.get({
+            access: configTwitter.access,
+            query: {
+                limit: configTwitter.limit
+            }
+        })
+        .then(function () {
+            done('A proper config should be needed!');
+        })
+        .catch(function () {
+            done();
+        });
+    });
+
+    it('should return twitter data', function (done) {
         module.get(configTwitter)
         .then(function (data) {
             expect(data.data[0]).to.have.property('created_at');
@@ -135,9 +157,36 @@ describe('get.twitter', function () {
     });
 });
 
-// describe('get.instagram', function () {
-//     var module = socialFeeds.instagram;
+describe('get.instagram', function () {
+    var module = socialFeeds.instagram;
+    var configInstagram = basicConfig.instagram;
 
-//     commonBasic(module);
-//     commonModule(module);
-// });
+    commonBasic(module);
+    commonModule(module, configInstagram);
+
+    it('should error without screen name', function (done) {
+        module.get({
+            query: {
+                limit: configInstagram.limit
+            }
+        })
+        .then(function () {
+            done('A proper config should be needed!');
+        })
+        .catch(function () {
+            done();
+        });
+    });
+
+    it('should return instagram data', function (done) {
+        module.get(configInstagram)
+        .then(function (data) {
+            expect(data.data[0]).to.have.property('images');
+            expect(data.data[0]).to.have.property('code');
+            done();
+        })
+        .catch(function (err) {
+            done(err);
+        });
+    });
+});
