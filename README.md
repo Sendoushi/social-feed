@@ -2,6 +2,12 @@
 
 Feed aggregator from various social sources.
 
+#### Available feeds
+- [ ] Facebook
+- [ ] Twitter
+- [ ] Instagram
+- [ ] Google+
+
 ---
 
 ## Install
