@@ -45,13 +45,13 @@ var config = {
 };
 
 // To get social feeds based on the config object keys
-socialFeed.get(config)
+socialFeeds.get(config)
 .then(function (data) {
     // Data available here...
 });
 
 // To get [feed]'s feed
-socialFeed[feed].get(config[feed])
+socialFeeds[feed].get(config[feed])
 .then(function (data) {
     // Data available here...
 });
