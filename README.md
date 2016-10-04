@@ -4,7 +4,7 @@ Feed aggregator from various social sources.
 
 #### Available feeds
 - [ ] Facebook
-- [ ] Twitter
+- [x] Twitter
 - [ ] Instagram
 - [ ] Google+
 
@@ -22,9 +22,18 @@ npm install --save ...
 
 ```js
 var config = {
-    // TODO: Set configs
     facebook: {},
-    twitter: {},
+    twitter: {
+        access: {
+            consumerKey: '',
+            consumerSecret: '',
+            token: '',
+            tokenSecret: ''
+        }, query: {
+            screenName: '',
+            count: 10
+        }
+    },
     instagram: {}  
 };
 
@@ -34,20 +43,8 @@ socialFeed.get(config)
     // Data available here...
 });
 
-// To get facebook social feed
-socialFeed.getFacebook(config.facebook)
-.then(function (data) {
-    // Data available here...
-});
-
-// To get twitter social feed
-socialFeed.getTwitter(config.twitter)
-.then(function (data) {
-    // Data available here...
-});
-
-// To get instagram social feed
-socialFeed.getInstagram(config.instagram)
+// To get [feed]'s feed
+socialFeed[feed].get(config[feed])
 .then(function (data) {
     // Data available here...
 });
@@ -73,7 +70,9 @@ socialFeeds.get(...);
 
 ---
 
-## Development usage
+## Contribution development
+
+If you want to help out with this module please follow next steps and pull request your changes.
 
 ### Installation
 

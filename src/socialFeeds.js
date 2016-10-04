@@ -23,11 +23,17 @@ require('es6-promise').polyfill();
  * @return {promise}
  */
 function get(config) {
-    var keys = Object.keys(config);
+    var keys = config && Object.keys(config);
     var promisedFeeds = [];
     var promises = [];
     var feed;
     var i;
+
+    if (!config || typeof config !== 'object') {
+        return new Promise(function (resolve, reject) {
+            reject('A config object is needed!');
+        });
+    }
 
     // Get needed feeds promises
     for (i = 0; i < keys.length; i += 1) {
@@ -58,7 +64,7 @@ function get(config) {
 
 module.exports = {
     get: get,
-    getFacebook: feeds.facebook.get,
-    getTwitter: feeds.twitter.get,
-    getInstagram: feeds.instagram.get
+    facebook: feeds.facebook,
+    twitter: feeds.twitter,
+    instagram: feeds.instagram
 };

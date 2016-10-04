@@ -24,7 +24,7 @@ var isProd = util.env.production || util.env.prod;
  * Build script
  */
 function buildScript() {
-    var mainScript = path.join(srcFolder, 'bootstrap.js');
+    var mainScript = path.join(srcFolder, 'webpack/bootstrap.js');
     var destScriptFolder = buildFolder;
 
     var task = gulp.src(mainScript)
