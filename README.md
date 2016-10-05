@@ -43,6 +43,7 @@ var config = {
         },
         query: {
             screenName: '',
+            excludeReplies: '',
             limit: 1 // Defaults to 50
         }
     },

@@ -24,13 +24,14 @@ var basicConfig = {
     },
     twitter: {
         access: {
-            consumerKey: 'ulFwf8RaQs6S9ElUbZnFxV0u4',
-            consumerSecret: 'y0H2FqCYuoTTYD36Nob1Avc0lmyWEjEs7XopuCNmThQF9Vzfwj',
+            consumerKey: 'YJgft5rpKrLJZSQ0G22FKlKiM',
+            consumerSecret: '13LiSXwYfCBKpn69hy9glgsHme3GSAjXNqWkdDBD7nl5ZZ5BvV',
             token: '783357826949324800-Df16ktCCvZq87XaNjpEStOzm9KgozzZ',
             tokenSecret: 'c5c2t04WcPufIfcHytf8dKLeAQLVAuSCn3yKQOzYsqWyN'
         },
         query: {
             screenName: 'google',
+            excludeReplies: 'true',
             limit: 2
         }
     },

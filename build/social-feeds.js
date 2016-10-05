@@ -1724,7 +1724,8 @@
 	function proceedReq(cb, config) {
 	    var params = {
 	        screen_name: config.query.screenName,
-	        count: config.query.limit || 50
+	        count: config.query.limit || 50,
+	        exclude_replies: config.query.excludeReplies
 	    };
 	    var promise = new Promise(function (resolve, reject) {
 	        // Make the request
