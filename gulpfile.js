@@ -7,7 +7,7 @@ var path = require('path');
 var gulp = require('gulp');
 var util = require('gulp-util');
 var gulpWebpack = require('gulp-webpack');
-var webpack = require('webpack');
+var ClosureCompilerPlugin = require('webpack-closure-compiler');
 
 // ---------------------------------------------
 // Vars
@@ -46,7 +46,16 @@ function buildScript() {
             loaders: []
         },
         // TODO: Set closure compiler
-        plugins: isProd && [new webpack.optimize.UglifyJsPlugin()]
+        plugins: isProd && [
+            new ClosureCompilerPlugin({
+                compiler: {
+                    language_in: 'ECMASCRIPT5',
+                    language_out: 'ECMASCRIPT5',
+                    compilation_level: 'ADVANCED'
+                },
+                concurrency: 3,
+            })
+        ]
     }))
     .pipe(gulp.dest(destScriptFolder));
 
