@@ -71,7 +71,7 @@
 	
 	var feeds = {
 	    facebook: __webpack_require__(2),
-	    twitter: __webpack_require__(9),
+	    twitter: __webpack_require__(8),
 	    instagram: __webpack_require__(19)
 	};
 	
@@ -263,15 +263,18 @@
 	        xml = new window.XMLHttpRequest();
 	    } else if ("function" === 'function' && __webpack_require__(7)) {
 	        // now, consider RequireJS and/or Node.js objects
-	
-	        try {
-	            // look for xmlhttprequest module
-	            XMLHttpRequest = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"xmlhttprequest\""); e.code = 'MODULE_NOT_FOUND'; throw e; }())).XMLHttpRequest;
-	            xml = new XMLHttpRequest();
-	        } catch (err) {
-	            // or maybe the user is using xhr2
-	            XMLHttpRequest = __webpack_require__(8);
-	            xml = new XMLHttpRequest();
+	        /* global IS_BROWSER */
+	        // Condition is coming from webpack.
+	        if (false) {
+	            try {
+	                // look for xmlhttprequest module
+	                XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+	                xml = new XMLHttpRequest();
+	            } catch (err) {
+	                // or maybe the user is using xhr2
+	                XMLHttpRequest = require('xhr2');
+	                xml = new XMLHttpRequest();
+	            }
 	        }
 	    }
 	
@@ -282,9 +285,10 @@
 	 * Makes a request
 	 * @param  {string} url
 	 * @param  {string} method
+	 * @param  {*} data
 	 * @return {promise}
 	 */
-	function makeReq(url, method) {
+	function makeReq(url, method, data) {
 	    var xhr = getXmlRequestObject();
 	    var promise = new Promise(function (resolve, reject) {
 	        xhr.onload = function () {
@@ -303,7 +307,7 @@
 	    // Finally the request
 	    xhr.open(method, url, true);
 	    xhr.responseType = 'json';
-	    xhr.send(null);
+	    xhr.send(data);
 	
 	    return promise;
 	}
@@ -1695,13 +1699,6 @@
 
 /***/ },
 /* 8 */
-/***/ function(module, exports) {
-
-	module.exports = XMLHttpRequest;
-
-
-/***/ },
-/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable strict */
@@ -1712,7 +1709,7 @@
 	// --------------------------------
 	// Vars / Imports
 	
-	var Codebird = __webpack_require__(10);
+	var Codebird = __webpack_require__(9);
 	
 	__webpack_require__(4).polyfill();
 	
@@ -1792,7 +1789,7 @@
 
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {/**
@@ -3032,7 +3029,7 @@
 	            }
 	        // now, consider RequireJS and/or Node.js objects
 	        } else if ("function" === "function"
-	            && __webpack_require__(12)
+	            && __webpack_require__(11)
 	        ) {
 	            // look for xmlhttprequest module
 	            try {
@@ -3041,7 +3038,7 @@
 	            } catch (e1) {
 	                // or maybe the user is using xhr2
 	                try {
-	                    var XMLHttpRequest = __webpack_require__(8);
+	                    var XMLHttpRequest = __webpack_require__(18);
 	                    xml = new XMLHttpRequest();
 	                } catch (e2) {
 	                    console.error("xhr2 object not defined, cancelling.");
@@ -3309,10 +3306,10 @@
 	
 	})();
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -3328,12 +3325,12 @@
 
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var map = {
-		"./codebird": 10,
-		"./codebird.js": 10
+		"./codebird": 9,
+		"./codebird.js": 9
 	};
 	function webpackContext(req) {
 		return __webpack_require__(webpackContextResolve(req));
@@ -3346,16 +3343,23 @@
 	};
 	webpackContext.resolve = webpackContextResolve;
 	module.exports = webpackContext;
-	webpackContext.id = 12;
+	webpackContext.id = 11;
 
 
 /***/ },
+/* 12 */,
 /* 13 */,
 /* 14 */,
 /* 15 */,
 /* 16 */,
 /* 17 */,
-/* 18 */,
+/* 18 */
+/***/ function(module, exports) {
+
+	module.exports = XMLHttpRequest;
+
+
+/***/ },
 /* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -3380,9 +3384,16 @@
 	 * @return {promise}
 	 */
 	function proceedReq(config) {
-	    var screenName = config.query.screenName;
-	    var url = 'https://www.instagram.com/' + screenName + '/media';
+	    var userId = config.query.userId;
+	    var token = config.access.token;
+	    var url = 'https://api.instagram.com/v1/users/';
 	    var limit = config.query.limit || 50;
+	
+	    url += userId + '/media/recent?access_token=' + token;
+	
+	    if (config.access.proxy) {
+	        url = 'http://cors.io/?' + url;
+	    }
 	
 	    return req.get(url, 'GET')
 	    .then(function (data) {
@@ -3402,9 +3413,9 @@
 	        });
 	    }
 	
-	    if (!config.query || !config.query.screenName) {
+	    if (!config.query || !config.query.userId || !config.access || !config.access.token) {
 	        return new Promise(function (resolve, reject) {
-	            reject('Instagram needs a screen name!');
+	            reject('Instagram needs a user id and a token!');
 	        });
 	    }
 	

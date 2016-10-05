@@ -5,7 +5,7 @@ Feed aggregator from various social sources.
 #### Available feeds
 - [x] Facebook: [helper for the access](https://www.slickremix.com/docs/how-to-get-api-keys-and-tokens-for-twitter/)
 - [x] Twitter: [helper for the access](https://developers.facebook.com/quickstarts/)
-- [x] Instagram
+- [x] Instagram: [helper for the access](https://medium.com/@bkwebster/how-to-get-instagram-api-access-token-and-fix-your-broken-feed-c8ad470e3f02#.26agswzvx)
 - [ ] Google+
 
 ---
@@ -47,8 +47,12 @@ var config = {
         }
     },
     instagram: {
+        access: {
+            token: '',
+            proxy: false
+        },
         query: {
-            screenName: '',
+            userId: '',
             limit: 1 // Defaults to 50
         }
     }  

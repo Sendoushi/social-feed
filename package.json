@@ -16,7 +16,6 @@
   "license": "ISC",
   "devDependencies": {
     "babel-eslint": "^6.1.2",
-    "es6-promise": "^4.0.5",
     "eslint": "^2.0.0",
     "eslint-config-defaults": "^9.0.0",
     "eslint-plugin-react": "^6.2.0",
@@ -31,6 +30,7 @@
     "xhr2": "^0.1.3"
   },
   "dependencies": {
-    "codebird": "^2.6.0"
+    "codebird": "^2.6.0",
+    "es6-promise": "^4.0.5"
   }
 }

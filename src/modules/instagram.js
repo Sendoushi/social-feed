@@ -19,9 +19,16 @@ require('es6-promise').polyfill();
  * @return {promise}
  */
 function proceedReq(config) {
-    var screenName = config.query.screenName;
-    var url = 'https://www.instagram.com/' + screenName + '/media';
+    var userId = config.query.userId;
+    var token = config.access.token;
+    var url = 'https://api.instagram.com/v1/users/';
     var limit = config.query.limit || 50;
+
+    url += userId + '/media/recent?access_token=' + token;
+
+    if (config.access.proxy) {
+        url = 'http://cors.io/?' + url;
+    }
 
     return req.get(url, 'GET')
     .then(function (data) {
@@ -41,9 +48,9 @@ function get(config) {
         });
     }
 
-    if (!config.query || !config.query.screenName) {
+    if (!config.query || !config.query.userId || !config.access || !config.access.token) {
         return new Promise(function (resolve, reject) {
-            reject('Instagram needs a screen name!');
+            reject('Instagram needs a user id and a token!');
         });
     }
 

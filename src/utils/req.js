@@ -24,15 +24,18 @@ function getXmlRequestObject() {
         xml = new window.XMLHttpRequest();
     } else if (typeof require === 'function' && require) {
         // now, consider RequireJS and/or Node.js objects
-
-        try {
-            // look for xmlhttprequest module
-            XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
-            xml = new XMLHttpRequest();
-        } catch (err) {
-            // or maybe the user is using xhr2
-            XMLHttpRequest = require('xhr2');
-            xml = new XMLHttpRequest();
+        /* global IS_BROWSER */
+        // Condition is coming from webpack.
+        if (typeof IS_BROWSER === 'undefined' || !IS_BROWSER) {
+            try {
+                // look for xmlhttprequest module
+                XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+                xml = new XMLHttpRequest();
+            } catch (err) {
+                // or maybe the user is using xhr2
+                XMLHttpRequest = require('xhr2');
+                xml = new XMLHttpRequest();
+            }
         }
     }
 
@@ -43,9 +46,10 @@ function getXmlRequestObject() {
  * Makes a request
  * @param  {string} url
  * @param  {string} method
+ * @param  {*} data
  * @return {promise}
  */
-function makeReq(url, method) {
+function makeReq(url, method, data) {
     var xhr = getXmlRequestObject();
     var promise = new Promise(function (resolve, reject) {
         xhr.onload = function () {
@@ -64,7 +68,7 @@ function makeReq(url, method) {
     // Finally the request
     xhr.open(method, url, true);
     xhr.responseType = 'json';
-    xhr.send(null);
+    xhr.send(data);
 
     return promise;
 }

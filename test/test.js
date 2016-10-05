@@ -35,8 +35,12 @@ var basicConfig = {
         }
     },
     instagram: {
+        access: {
+            token: '4005506095.07386e8.d670643e26c540b5943c350e620587ed',
+            proxy: false
+        },
         query: {
-            screenName: 'google',
+            userId: '4005506095',
             limit: 2
         }
     }
@@ -165,8 +169,6 @@ describe('get', function () {
             });
         });
     });
-
-    // TODO: Test modules results...
 });
 
 describe('get.facebook', function () {
@@ -180,8 +182,8 @@ describe('get.facebook', function () {
         module.get({
             access: configFacebook.access,
             query: {
-                fields: configFacebook.fields,
-                limit: configFacebook.limit
+                fields: configFacebook.query.fields,
+                limit: configFacebook.query.limit
             }
         })
         .then(function () {
@@ -244,7 +246,7 @@ describe('get.twitter', function () {
         module.get({
             access: configTwitter.access,
             query: {
-                limit: configTwitter.limit
+                limit: configTwitter.query.limit
             }
         })
         .then(function () {
@@ -278,10 +280,26 @@ describe('get.instagram', function () {
     commonBasic(module);
     commonModule(module, configInstagram);
 
-    it('should error without screen name', function (done) {
+    it('should error without user id', function (done) {
+        module.get({
+            access: configInstagram.access,
+            query: {
+                limit: configInstagram.query.limit
+            }
+        })
+        .then(function () {
+            done('A proper config should be needed!');
+        })
+        .catch(function () {
+            done();
+        });
+    });
+
+    it('should error without token', function (done) {
         module.get({
             query: {
-                limit: configInstagram.limit
+                userId: configInstagram.query.userId,
+                limit: configInstagram.query.limit
             }
         })
         .then(function () {
@@ -296,8 +314,10 @@ describe('get.instagram', function () {
         reqThrottler(this, function () {
             module.get(configInstagram)
             .then(function (data) {
+                expect(data.data[0]).to.have.property('type');
+                expect(data.data[0]).to.have.property('link');
                 expect(data.data[0]).to.have.property('images');
-                expect(data.data[0]).to.have.property('code');
+
                 done();
             })
             .catch(function (err) {

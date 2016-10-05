@@ -7,6 +7,7 @@ var path = require('path');
 var gulp = require('gulp');
 var util = require('gulp-util');
 var gulpWebpack = require('gulp-webpack');
+var webpack = require('webpack');
 var ClosureCompilerPlugin = require('webpack-closure-compiler');
 
 // ---------------------------------------------
@@ -26,8 +27,24 @@ var isProd = util.env.production || util.env.prod;
 function buildScript() {
     var mainScript = path.join(srcFolder, 'webpack/bootstrap.js');
     var destScriptFolder = buildFolder;
+    var plugins = [
+        new webpack.DefinePlugin({ IS_BROWSER: true })
+    ];
+    var task;
 
-    var task = gulp.src(mainScript)
+    if (isProd) {
+        plugins.push(new ClosureCompilerPlugin({
+            compiler: {
+                language_in: 'ECMASCRIPT5',
+                language_out: 'ECMASCRIPT5',
+                compilation_level: 'ADVANCED'
+            },
+            concurrency: 3,
+        }));
+    }
+
+    // Set task
+    task = gulp.src(mainScript)
     .pipe(gulpWebpack({
         output: {
             filename: !isProd ? 'social-feeds.js' : 'social-feeds.min.js'
@@ -45,17 +62,7 @@ function buildScript() {
         module: {
             loaders: []
         },
-        // TODO: Set closure compiler
-        plugins: isProd && [
-            new ClosureCompilerPlugin({
-                compiler: {
-                    language_in: 'ECMASCRIPT5',
-                    language_out: 'ECMASCRIPT5',
-                    compilation_level: 'ADVANCED'
-                },
-                concurrency: 3,
-            })
-        ]
+        plugins: plugins
     }))
     .pipe(gulp.dest(destScriptFolder));
 
