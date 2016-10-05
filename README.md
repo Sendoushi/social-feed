@@ -12,8 +12,7 @@ Feed aggregator from various social sources.
 
 ## Install
 ```js
-// TODO: Set the package in npm
-npm install --save ...
+npm install --save git://github.com/Sendoushi/social-feeds.git
 ```
 
 ## Library usage
