@@ -3,8 +3,8 @@
 Feed aggregator from various social sources.
 
 #### Available feeds
-- [ ] Facebook
-- [x] Twitter: [helper for the access](https://www.slickremix.com/docs/how-to-get-api-keys-and-tokens-for-twitter/)
+- [x] Facebook: [helper for the access](https://www.slickremix.com/docs/how-to-get-api-keys-and-tokens-for-twitter/)
+- [x] Twitter: [helper for the access](https://developers.facebook.com/quickstarts/)
 - [x] Instagram
 - [ ] Google+
 
@@ -23,6 +23,17 @@ npm install --save ...
 ```js
 var config = {
     facebook: {
+        access: {
+            appId: '',
+            appSecret: ''
+        },
+        query: {
+            type: '', // Defaults to 'feed'. Available 'page'
+            pageId: '',
+            fields: '', // Defaults to 'id,message,created_time,likes,comments'
+            feed: '', // Defaults to 'feed'
+            limit: 1 // Defaults to 50
+        }
     },
     twitter: {
         access: {
@@ -33,13 +44,13 @@ var config = {
         },
         query: {
             screenName: '',
-            count: 10
+            limit: 1 // Defaults to 50
         }
     },
     instagram: {
         query: {
             screenName: '',
-            limit: 10
+            limit: 1 // Defaults to 50
         }
     }  
 };
@@ -50,8 +61,8 @@ socialFeeds.get(config)
     // Data available here...
 });
 
-// To get [feed]'s feed
-socialFeeds[feed].get(config[feed])
+// To get [feedName]'s feed
+socialFeeds[feedName].get(config[feedName])
 .then(function (data) {
     // Data available here...
 });
@@ -73,6 +84,13 @@ window.socialFeeds.get(...);
 ```js
 var socialFeeds = require('social-feeds');
 socialFeeds.get(...);
+```
+
+For better javascript size and minor footprint, I would recommend to import directly the specific modules you need.
+
+```js
+var feed = require('social-feeds/modules/' + feedName);
+feed.get(...);
 ```
 
 ---

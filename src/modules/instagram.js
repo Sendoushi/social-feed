@@ -14,24 +14,18 @@ require('es6-promise').polyfill();
 // Functions
 
 /**
- * Gets instagram timeline
+ * Proceeds with module request
  * @param  {object} config
  * @return {promise}
  */
-function getTimeline(config) {
+function proceedReq(config) {
     var screenName = config.query.screenName;
     var url = 'https://www.instagram.com/' + screenName + '/media';
+    var limit = config.query.limit || 50;
 
     return req.get(url, 'GET')
     .then(function (data) {
-        return (data.data || data.items);
-    })
-    .then(function (data) {
-        if (config.query.limit) {
-            return data.splice(0, config.query.limit);
-        }
-
-        return data;
+        return (data.data || data.items).splice(0, limit);
     });
 }
 
@@ -54,7 +48,7 @@ function get(config) {
     }
 
     // Lets retrieve the data now
-    return getTimeline(config)
+    return proceedReq(config)
     .then(function (data) {
         return {
             data: data

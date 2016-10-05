@@ -14,14 +14,14 @@ require('es6-promise').polyfill();
 // Functions
 
 /**
- * Gets twitter timeline
- * @param  {object} query
+ * Proceeds with module request
+ * @param  {object} config
  * @return {promise}
  */
-function getTimeline(cb, query) {
+function proceedReq(cb, config) {
     var params = {
-        screen_name: query.screenName,
-        count: query.limit
+        screen_name: config.query.screenName,
+        count: config.query.limit || 50
     };
     var promise = new Promise(function (resolve, reject) {
         // Make the request
@@ -69,7 +69,7 @@ function get(config) {
     cb.setToken(access.token, access.tokenSecret);
 
     // Lets retrieve the data now
-    return getTimeline(cb, config.query || {})
+    return proceedReq(cb, config)
     .then(function (data) {
         return {
             data: data

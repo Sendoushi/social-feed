@@ -10,6 +10,18 @@ var expect = require('expect.js');
 var socialFeeds = require('../src/socialFeeds.js');
 // Keys and tokens just for test purposes
 var basicConfig = {
+    facebook: {
+        access: {
+            appId: '1114798815274804',
+            appSecret: '5a824303a415b98e7c555d78b1a3231c'
+        },
+        query: {
+            type: 'feed',
+            pageId: '104958162837',
+            fields: 'id,message,picture,link,name,description,type,icon,created_time,from,object_id,likes,comments',
+            limit: 2
+        }
+    },
     twitter: {
         access: {
             consumerKey: 'ulFwf8RaQs6S9ElUbZnFxV0u4',
@@ -25,10 +37,23 @@ var basicConfig = {
     instagram: {
         query: {
             screenName: 'google',
-            limit: 10
+            limit: 2
         }
     }
 };
+
+// --------------------------------
+// General functions
+
+/**
+ * Request throttler
+ * @param  {this} self
+ * @param  {function} cb
+ */
+function reqThrottler(self, cb) {
+    self.timeout(5000);
+    setTimeout(cb.bind(self), 500);
+}
 
 // --------------------------------
 // Basic and general tests
@@ -79,15 +104,21 @@ function commonModule(module, config) {
     });
 
     it('should return data', function (done) {
-        module.get(config)
-        .then(function (data) {
-            expect(data).to.have.property('data');
-            expect(data.data).to.be.an('array');
-            config.query.limit && expect(data.data.length).to.be.lessThan(config.query.limit + 1);
-            done();
-        })
-        .catch(function (err) {
-            done(err);
+        reqThrottler(this, function () {
+            module.get(config)
+            .then(function (data) {
+                var limit = config.query.limit;
+
+                expect(data).to.have.property('data');
+                expect(data.data).to.be.an('object');
+
+                limit && expect(data.data.length).to.be.lessThan(limit + 1);
+
+                done();
+            })
+            .catch(function (err) {
+                done(err);
+            });
         });
     });
 }
@@ -111,14 +142,95 @@ describe('get', function () {
         });
     });
 
+    it('should return all data', function (done) {
+        reqThrottler(this, function () {
+            module.get(basicConfig)
+            .then(function (data) {
+                expect(data).to.have.property('facebook');
+                expect(data).to.have.property('twitter');
+                expect(data).to.have.property('instagram');
+
+                expect(data.facebook).to.have.property('data');
+                expect(data.twitter).to.have.property('data');
+                expect(data.instagram).to.have.property('data');
+
+                expect(data.facebook.data).to.be.an('array');
+                expect(data.twitter.data).to.be.an('array');
+                expect(data.instagram.data).to.be.an('array');
+
+                done();
+            })
+            .catch(function (err) {
+                done(err);
+            });
+        });
+    });
+
     // TODO: Test modules results...
 });
 
-describe.skip('get.facebook', function () {
+describe('get.facebook', function () {
     var module = socialFeeds.facebook;
+    var configFacebook = basicConfig.facebook;
 
     commonBasic(module);
-    commonModule(module);
+    commonModule(module, configFacebook);
+
+    it('should error without page id', function (done) {
+        module.get({
+            access: configFacebook.access,
+            query: {
+                fields: configFacebook.fields,
+                limit: configFacebook.limit
+            }
+        })
+        .then(function () {
+            done('A proper config should be needed!');
+        })
+        .catch(function () {
+            done();
+        });
+    });
+
+    it('should return facebook data', function (done) {
+        reqThrottler(this, function () {
+            module.get(configFacebook)
+            .then(function (data) {
+                expect(data.data[0]).to.have.property('id');
+                expect(data.data[0]).to.have.property('message');
+                expect(data.data[0]).to.have.property('created_time');
+                expect(data.data[0]).to.have.property('from');
+                expect(data.data[0]).to.have.property('object_id');
+
+                done();
+            })
+            .catch(function (err) {
+                done(err);
+            });
+        });
+    });
+
+    it('should return facebook page', function (done) {
+        reqThrottler(this, function () {
+            module.get({
+                access: configFacebook.access,
+                query: {
+                    type: 'page',
+                    fields: 'id,link,name',
+                    pageId: configFacebook.query.pageId
+                }
+            })
+            .then(function (data) {
+                expect(data.data).to.have.property('id');
+                expect(data.data).to.have.property('link');
+                expect(data.data).to.have.property('name');
+                done();
+            })
+            .catch(function (err) {
+                done(err);
+            });
+        });
+    });
 });
 
 describe('get.twitter', function () {
@@ -144,15 +256,17 @@ describe('get.twitter', function () {
     });
 
     it('should return twitter data', function (done) {
-        module.get(configTwitter)
-        .then(function (data) {
-            expect(data.data[0]).to.have.property('created_at');
-            expect(data.data[0]).to.have.property('id');
-            expect(data.data[0]).to.have.property('text');
-            done();
-        })
-        .catch(function (err) {
-            done(err);
+        reqThrottler(this, function () {
+            module.get(configTwitter)
+            .then(function (data) {
+                expect(data.data[0]).to.have.property('created_at');
+                expect(data.data[0]).to.have.property('id');
+                expect(data.data[0]).to.have.property('text');
+                done();
+            })
+            .catch(function (err) {
+                done(err);
+            });
         });
     });
 });
@@ -179,14 +293,16 @@ describe('get.instagram', function () {
     });
 
     it('should return instagram data', function (done) {
-        module.get(configInstagram)
-        .then(function (data) {
-            expect(data.data[0]).to.have.property('images');
-            expect(data.data[0]).to.have.property('code');
-            done();
-        })
-        .catch(function (err) {
-            done(err);
+        reqThrottler(this, function () {
+            module.get(configInstagram)
+            .then(function (data) {
+                expect(data.data[0]).to.have.property('images');
+                expect(data.data[0]).to.have.property('code');
+                done();
+            })
+            .catch(function (err) {
+                done(err);
+            });
         });
     });
 });
