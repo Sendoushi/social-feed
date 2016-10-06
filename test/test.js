@@ -18,7 +18,7 @@ var basicConfig = {
         query: {
             type: 'feed',
             pageId: '104958162837',
-            fields: 'id,message,picture,link,name,description,type,icon,created_time,from,object_id,likes,comments',
+            fields: 'id,message,picture,full_picture,link,name,description,type,icon,created_time,from,object_id,likes,comments',
             limit: 2
         }
     },

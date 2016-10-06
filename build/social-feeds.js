@@ -1725,7 +1725,8 @@
 	    var params = {
 	        screen_name: config.query.screenName,
 	        count: config.query.limit || 50,
-	        exclude_replies: config.query.excludeReplies
+	        exclude_replies: config.query.excludeReplies,
+	        include_entities: config.query.includeEntities
 	    };
 	    var promise = new Promise(function (resolve, reject) {
 	        // Make the request

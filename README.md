@@ -44,6 +44,7 @@ var config = {
         query: {
             screenName: '',
             excludeReplies: '',
+            includeEntities: '',
             limit: 1 // Defaults to 50
         }
     },
