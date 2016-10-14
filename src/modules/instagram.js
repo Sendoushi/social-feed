@@ -23,6 +23,8 @@ function proceedReq(config) {
     var token = config.access.token;
     var url = 'https://api.instagram.com/v1/users/';
     var limit = config.query.limit || 50;
+    var timeout = config.query.timeout;
+    var promise;
 
     url += userId + '/media/recent?access_token=' + token;
 
@@ -30,10 +32,40 @@ function proceedReq(config) {
         url = 'http://cors.io/?' + url;
     }
 
-    return req.get(url, 'GET')
-    .then(function (data) {
+    // Lets set it up
+    promise = new Promise(function (resolve, reject) {
+        var timer = !!timeout ? setTimeout(resolve, timeout) : null;
+
+        req.get(url, 'GET')
+        .then(function (data) {
+            if (!!timeout && !timer) {
+                return resolve({ data: [] });
+            }
+
+            // Lets remove the timeout
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+
+            // Lets remove the timeout
+            clearTimeout(timer);
+            timer = null;
+
+            // And resolve the right data
+            resolve(data);
+        })
+        .catch(function (err) {
+            reject(err);
+        });
+    });
+
+    // Lets process the promise
+    promise.then(function (data) {
         return (data.data || data.items).splice(0, limit);
     });
+
+    return promise;
 }
 
 /**
@@ -57,9 +89,7 @@ function get(config) {
     // Lets retrieve the data now
     return proceedReq(config)
     .then(function (data) {
-        return {
-            data: data
-        };
+        return (data && !data.data) && { data: data } || data;
     });
 }
 

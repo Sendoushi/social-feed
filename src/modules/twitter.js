@@ -19,6 +19,7 @@ require('es6-promise').polyfill();
  * @return {promise}
  */
 function proceedReq(cb, config) {
+    var timeout = config.query.timeout;
     var params = {
         screen_name: config.query.screenName,
         count: config.query.limit || 50,
@@ -26,8 +27,20 @@ function proceedReq(cb, config) {
         include_entities: config.query.includeEntities
     };
     var promise = new Promise(function (resolve, reject) {
+        var timer = !!timeout ? setTimeout(resolve, timeout) : null;
+
         // Make the request
         cb.__call('statuses_userTimeline', params, function (reply, rate, err) {
+            if (!!timeout && !timer) {
+                return resolve();
+            }
+
+            // Lets remove the timeout
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+
             if (err) {
                 reject(err);
             } else {
@@ -73,9 +86,7 @@ function get(config) {
     // Lets retrieve the data now
     return proceedReq(cb, config)
     .then(function (data) {
-        return {
-            data: data
-        };
+        return (data && !data.data) && { data: data } || data;
     });
 }
 

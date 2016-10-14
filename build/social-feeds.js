@@ -162,13 +162,36 @@
 	    var fields = config.query.fields || 'id,link,name';
 	    var pageUrl = 'https://graph.facebook.com/v2.3/';
 	    var pageId = config.query.pageId;
+	    var timeout = config.query.timeout;
+	    var promise;
 	
 	    pageUrl += pageId + '?key=value&access_token=' + appAccessToken + '&fields=' + fields;
 	
-	    return req.get(pageUrl, 'GET')
-	    .then(function (data) {
-	        return { data: data };
+	    // Lets set it up
+	    promise = new Promise(function (resolve, reject) {
+	        var timer = !!timeout ? setTimeout(resolve, timeout) : null;
+	
+	        req.get(pageUrl, 'GET')
+	        .then(function (data) {
+	            if (!!timeout && !timer) {
+	                return resolve();
+	            }
+	
+	            // Lets remove the timeout
+	            if (timer) {
+	                clearTimeout(timer);
+	                timer = null;
+	            }
+	
+	            // And resolve the right data
+	            resolve(data);
+	        })
+	        .catch(function (err) {
+	            reject(err);
+	        });
 	    });
+	
+	    return promise;
 	}
 	
 	/**
@@ -183,11 +206,37 @@
 	    var feed = config.query.feed || 'feed';
 	    var limit = config.query.limit || 50;
 	    var pageId = config.query.pageId;
+	    var timeout = config.query.timeout;
+	    var promise;
 	
 	    graphUrl += pageId + '/' + feed + '?key=value&access_token=' + appAccessToken;
 	    graphUrl += '&fields=' + fields + '&limit=' + limit;
 	
-	    return req.get(graphUrl, 'GET');
+	    // Lets set it up
+	    promise = new Promise(function (resolve, reject) {
+	        var timer = !!timeout ? setTimeout(resolve, timeout) : null;
+	
+	        req.get(graphUrl, 'GET')
+	        .then(function (data) {
+	            if (!!timeout && !timer) {
+	                return resolve();
+	            }
+	
+	            // Lets remove the timeout
+	            if (timer) {
+	                clearTimeout(timer);
+	                timer = null;
+	            }
+	
+	            // And resolve the right data
+	            resolve(data);
+	        })
+	        .catch(function (err) {
+	            reject(err);
+	        });
+	    });
+	
+	    return promise;
 	}
 	
 	/**
@@ -222,7 +271,10 @@
 	    rightPromise = type === 'page' ? getPage : getFeed;
 	
 	    // Lets retrieve the data now
-	    return rightPromise(config);
+	    return rightPromise(config)
+	    .then(function (data) {
+	        return (data && !data.data) && { data: data } || data;
+	    });
 	}
 	
 	// --------------------------------
@@ -1722,6 +1774,7 @@
 	 * @return {promise}
 	 */
 	function proceedReq(cb, config) {
+	    var timeout = config.query.timeout;
 	    var params = {
 	        screen_name: config.query.screenName,
 	        count: config.query.limit || 50,
@@ -1729,8 +1782,20 @@
 	        include_entities: config.query.includeEntities
 	    };
 	    var promise = new Promise(function (resolve, reject) {
+	        var timer = !!timeout ? setTimeout(resolve, timeout) : null;
+	
 	        // Make the request
 	        cb.__call('statuses_userTimeline', params, function (reply, rate, err) {
+	            if (!!timeout && !timer) {
+	                return resolve();
+	            }
+	
+	            // Lets remove the timeout
+	            if (timer) {
+	                clearTimeout(timer);
+	                timer = null;
+	            }
+	
 	            if (err) {
 	                reject(err);
 	            } else {
@@ -1776,9 +1841,7 @@
 	    // Lets retrieve the data now
 	    return proceedReq(cb, config)
 	    .then(function (data) {
-	        return {
-	            data: data
-	        };
+	        return (data && !data.data) && { data: data } || data;
 	    });
 	}
 	
@@ -3390,6 +3453,8 @@
 	    var token = config.access.token;
 	    var url = 'https://api.instagram.com/v1/users/';
 	    var limit = config.query.limit || 50;
+	    var timeout = config.query.timeout;
+	    var promise;
 	
 	    url += userId + '/media/recent?access_token=' + token;
 	
@@ -3397,10 +3462,40 @@
 	        url = 'http://cors.io/?' + url;
 	    }
 	
-	    return req.get(url, 'GET')
-	    .then(function (data) {
+	    // Lets set it up
+	    promise = new Promise(function (resolve, reject) {
+	        var timer = !!timeout ? setTimeout(resolve, timeout) : null;
+	
+	        req.get(url, 'GET')
+	        .then(function (data) {
+	            if (!!timeout && !timer) {
+	                return resolve({ data: [] });
+	            }
+	
+	            // Lets remove the timeout
+	            if (timer) {
+	                clearTimeout(timer);
+	                timer = null;
+	            }
+	
+	            // Lets remove the timeout
+	            clearTimeout(timer);
+	            timer = null;
+	
+	            // And resolve the right data
+	            resolve(data);
+	        })
+	        .catch(function (err) {
+	            reject(err);
+	        });
+	    });
+	
+	    // Lets process the promise
+	    promise.then(function (data) {
 	        return (data.data || data.items).splice(0, limit);
 	    });
+	
+	    return promise;
 	}
 	
 	/**
@@ -3424,9 +3519,7 @@
 	    // Lets retrieve the data now
 	    return proceedReq(config)
 	    .then(function (data) {
-	        return {
-	            data: data
-	        };
+	        return (data && !data.data) && { data: data } || data;
 	    });
 	}
 	

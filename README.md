@@ -31,7 +31,8 @@ var config = {
             pageId: '',
             fields: '', // Defaults to 'id,message,created_time,likes,comments'
             feed: '', // Defaults to 'feed'
-            limit: 1 // Defaults to 50
+            limit: 1, // Defaults to 50,
+            timeout: 0 // Optional. It should be set in milliseconds
         }
     },
     twitter: {
@@ -45,7 +46,8 @@ var config = {
             screenName: '',
             excludeReplies: '',
             includeEntities: '',
-            limit: 1 // Defaults to 50
+            limit: 1, // Defaults to 50
+            timeout: 0 // Optional. It should be set in milliseconds
         }
     },
     instagram: {
@@ -55,7 +57,8 @@ var config = {
         },
         query: {
             userId: '',
-            limit: 1 // Defaults to 50
+            limit: 1, // Defaults to 50
+            timeout: 0 // Optional. It should be set in milliseconds
         }
     }  
 };

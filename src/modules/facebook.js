@@ -23,13 +23,36 @@ function getPage(config) {
     var fields = config.query.fields || 'id,link,name';
     var pageUrl = 'https://graph.facebook.com/v2.3/';
     var pageId = config.query.pageId;
+    var timeout = config.query.timeout;
+    var promise;
 
     pageUrl += pageId + '?key=value&access_token=' + appAccessToken + '&fields=' + fields;
 
-    return req.get(pageUrl, 'GET')
-    .then(function (data) {
-        return { data: data };
+    // Lets set it up
+    promise = new Promise(function (resolve, reject) {
+        var timer = !!timeout ? setTimeout(resolve, timeout) : null;
+
+        req.get(pageUrl, 'GET')
+        .then(function (data) {
+            if (!!timeout && !timer) {
+                return resolve();
+            }
+
+            // Lets remove the timeout
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+
+            // And resolve the right data
+            resolve(data);
+        })
+        .catch(function (err) {
+            reject(err);
+        });
     });
+
+    return promise;
 }
 
 /**
@@ -44,11 +67,37 @@ function getFeed(config) {
     var feed = config.query.feed || 'feed';
     var limit = config.query.limit || 50;
     var pageId = config.query.pageId;
+    var timeout = config.query.timeout;
+    var promise;
 
     graphUrl += pageId + '/' + feed + '?key=value&access_token=' + appAccessToken;
     graphUrl += '&fields=' + fields + '&limit=' + limit;
 
-    return req.get(graphUrl, 'GET');
+    // Lets set it up
+    promise = new Promise(function (resolve, reject) {
+        var timer = !!timeout ? setTimeout(resolve, timeout) : null;
+
+        req.get(graphUrl, 'GET')
+        .then(function (data) {
+            if (!!timeout && !timer) {
+                return resolve();
+            }
+
+            // Lets remove the timeout
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+
+            // And resolve the right data
+            resolve(data);
+        })
+        .catch(function (err) {
+            reject(err);
+        });
+    });
+
+    return promise;
 }
 
 /**
@@ -83,7 +132,10 @@ function get(config) {
     rightPromise = type === 'page' ? getPage : getFeed;
 
     // Lets retrieve the data now
-    return rightPromise(config);
+    return rightPromise(config)
+    .then(function (data) {
+        return (data && !data.data) && { data: data } || data;
+    });
 }
 
 // --------------------------------
