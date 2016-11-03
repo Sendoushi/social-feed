@@ -41,6 +41,8 @@ function proceedReq(cb, config) {
                 timer = null;
             }
 
+            reply = (typeof reply === 'string') ? JSON.parse(reply) : reply;
+
             if (err) {
                 reject(err);
             } else {

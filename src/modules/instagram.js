@@ -52,6 +52,8 @@ function proceedReq(config) {
             clearTimeout(timer);
             timer = null;
 
+            data = (typeof data === 'string') ? JSON.parse(data) : data;
+
             // And resolve the right data
             resolve(data);
         })

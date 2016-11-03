@@ -44,6 +44,8 @@ function getPage(config) {
                 timer = null;
             }
 
+            data = (typeof data === 'string') ? JSON.parse(data) : data;
+
             // And resolve the right data
             resolve(data);
         })
@@ -88,6 +90,8 @@ function getFeed(config) {
                 clearTimeout(timer);
                 timer = null;
             }
+
+            data = (typeof data === 'string') ? JSON.parse(data) : data;
 
             // And resolve the right data
             resolve(data);
